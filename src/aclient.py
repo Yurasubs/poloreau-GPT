@@ -19,16 +19,19 @@ prompt_path = os.path.join(config_dir, prompt_name)
 with open(prompt_path, "r", encoding="utf-8") as f:
     prompt = f.read()
 
+
 class aclient(discord.Client):
     def __init__(self) -> None:
         intents = discord.Intents.default()
         intents.message_content = True
         super().__init__(intents=intents)
         self.tree = app_commands.CommandTree(self)
-        self.activity = discord.Activity(type=discord.ActivityType.listening, name="/chat | /help")
+        self.activity = discord.Activity(
+            type=discord.ActivityType.listening, name="/chat | /help")
         self.isPrivate = False
         self.is_replying_all = os.getenv("REPLYING_ALL")
-        self.replying_all_discord_channel_id = os.getenv("REPLYING_ALL_DISCORD_CHANNEL_ID")
+        self.replying_all_discord_channel_id = os.getenv(
+            "REPLYING_ALL_DISCORD_CHANNEL_ID")
         self.openAI_email = os.getenv("OPENAI_EMAIL")
         self.openAI_password = os.getenv("OPENAI_PASSWORD")
         self.openAI_API_key = os.getenv("OPENAI_API_KEY")
@@ -45,7 +48,7 @@ class aclient(discord.Client):
         if self.chat_model == "UNOFFICIAL":
             return AsyncChatbot(config={"email": self.openAI_email, "password": self.openAI_password, "access_token": self.chatgpt_access_token, "model": self.openAI_gpt_engine, "paid": self.chatgpt_paid})
         elif self.chat_model == "OFFICIAL":
-                return Chatbot(api_key=self.openAI_API_key, engine=self.openAI_gpt_engine, system_prompt=prompt)
+            return Chatbot(api_key=self.openAI_API_key, engine=self.openAI_gpt_engine, system_prompt=prompt)
         elif self.chat_model == "Bard":
             return BardChatbot(session_id=self.bard_session_id)
         elif self.chat_model == "Bing":
@@ -76,7 +79,8 @@ class aclient(discord.Client):
                 chat_model_status = f'ChatGPT {self.openAI_gpt_engine}'
             elif self.chat_model == "OFFICIAL":
                 chat_model_status = f'OpenAI {self.openAI_gpt_engine}'
-            response = (f'> **{user_message}** - <@{str(author)}> ({chat_model_status}) \n\n')
+            response = (
+                f'> **{user_message}** - <@{str(author)}> ({chat_model_status}) \n\n')
             if self.chat_model == "OFFICIAL":
                 response = f"{response}{await responses.official_handle_response(user_message, self)}"
             elif self.chat_model == "UNOFFICIAL":
@@ -93,12 +97,12 @@ class aclient(discord.Client):
                     parts = response.split("```")
 
                     for i in range(len(parts)):
-                        if i%2 == 0: # indices that are even are not code blocks
+                        if i % 2 == 0:  # indices that are even are not code blocks
                             if self.is_replying_all == "True":
                                 await message.channel.send(parts[i])
                             else:
                                 await message.followup.send(parts[i])
-                        else: # Odd-numbered parts are code blocks
+                        else:  # Odd-numbered parts are code blocks
                             code_block = parts[i].split("\n")
                             formatted_code_block = ""
                             for line in code_block:
@@ -111,7 +115,7 @@ class aclient(discord.Client):
                             # Send the code block in a separate message
                             if (len(formatted_code_block) > char_limit+100):
                                 code_block_chunks = [formatted_code_block[i:i+char_limit]
-                                                    for i in range(0, len(formatted_code_block), char_limit)]
+                                                     for i in range(0, len(formatted_code_block), char_limit)]
                                 for chunk in code_block_chunks:
                                     if self.is_replying_all == "True":
                                         await message.channel.send(f"```{chunk}```")
@@ -123,7 +127,7 @@ class aclient(discord.Client):
                                 await message.followup.send(f"```{formatted_code_block}```")
                 else:
                     response_chunks = [response[i:i+char_limit]
-                                    for i in range(0, len(response), char_limit)]
+                                       for i in range(0, len(response), char_limit)]
                     for chunk in response_chunks:
                         if self.is_replying_all == "True":
                             await message.channel.send(chunk)
@@ -152,7 +156,8 @@ class aclient(discord.Client):
                 with open(prompt_path, "r", encoding="utf-8") as f:
                     prompt = f.read()
                     if (discord_channel_id):
-                        logger.info(f"Send system prompt with size {len(prompt)}")
+                        logger.info(
+                            f"Send system prompt with size {len(prompt)}")
                         response = ""
                         if self.chat_model == "OFFICIAL":
                             response = f"{response}{await responses.official_handle_response(prompt, self)}"
@@ -166,7 +171,8 @@ class aclient(discord.Client):
                         await channel.send(response)
                         logger.info(f"System prompt response:{response}")
                     else:
-                        logger.info("No Channel selected. Skip sending system prompt.")
+                        logger.info(
+                            "No Channel selected. Skip sending system prompt.")
             else:
                 logger.info(f"No {prompt_name}. Skip sending system prompt.")
         except Exception as e:

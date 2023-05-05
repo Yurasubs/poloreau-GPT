@@ -19,7 +19,6 @@ class CustomFormatter(logging.Formatter):
         for level, color in LEVEL_COLORS
     }
 
-
     def format(self, record):
         formatter = self.FORMATS.get(record.levelno)
         if formatter is None:
@@ -36,7 +35,7 @@ class CustomFormatter(logging.Formatter):
         return output
 
 
-def setup_logger(module_name:str) -> logging.Logger:
+def setup_logger(module_name: str) -> logging.Logger:
     # create logger
     library, _, _ = module_name.partition('.py')
     logger = logging.getLogger(library)
