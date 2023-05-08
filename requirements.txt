@@ -4,5 +4,5 @@ asgiref==3.6.0
 openai==0.27.6
 revChatGPT==5.0.0
 GoogleBard==1.0.0
-EdgeGPT==0.3.5
+EdgeGPT==0.3.6
 asyncio==3.4.3
